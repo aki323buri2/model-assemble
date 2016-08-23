@@ -1,0 +1,26 @@
+{
+    "name": "shokuryu/html",
+    "authors": [
+        {
+            "name": "aki323buri2",
+            "email": "aki323buri2@gmail.com"
+        }
+    ],
+    "require": {
+    	"philo/laravel-blade": "*"
+        , "illuminate/routing": "*"
+    	, "illuminate/database": "*"
+    }
+
+    , "autoload": {
+    	"psr-4": {
+    		"App\\": [
+    			"src/app/"
+    		]
+    	}
+    	, "files": [
+    		"vendor/illuminate/support/helpers.php"
+    		, "src/functions.php"
+    	]
+    }
+}

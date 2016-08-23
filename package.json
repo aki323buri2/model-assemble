@@ -1,0 +1,26 @@
+{
+  "name": "html",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+
+  , "devDependencies": {
+  	"main-bower-files": "latest"
+  	, "gulp": "latest"
+  	, "gulp-load-plugins": "latest"
+  	, "gulp-plumber": "latest"
+  	, "gulp-sourcemaps": "latest"
+  	, "gulp-less": "latest"
+  	, "gulp-sass": "latest"
+  	, "gulp-autoprefixer": "latest"
+  	, "gulp-rename": "latest"
+  	, "gulp-replace": "latest"
+  	, "gulp-flatten": "latest"
+
+  }
+}
