@@ -1,13 +1,18 @@
 <?php
 namespace App;
 
+use App;
 use App\Base\Model;
 
 class Catalog extends Model 
 {
+	protected $storePath;
+
 	public function __construct($attributes = null)
 	{
 		parent::__construct($attributes);
+
+		$this->storePath = App::basePath().'/storage/catalog.json';
 		
 		$this->setColumns(matrix(
 			['name', 'type', 'size', 'title']

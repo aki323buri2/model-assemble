@@ -38,10 +38,12 @@ class Application extends Container
 		{
 			($registered[] = new $provider($this->container))->register();
 		}
+		/*
 		foreach ((array)@$registered as $provider)
 		{
 			$provider->boot();
 		}
+		*/
 
 		// Facades
 		$facades = [
