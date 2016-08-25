@@ -1,23 +1,33 @@
 <?php
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Illuminate\Support\Traits\CapsuleManagerTrait;
-use Illuminate\Support\Facades\Facade;
 use Illuminate\Container\Container;
+use Illuminate\Support\Fluent;
+use Illuminate\Support\Facades\Facade;
 
-class Application 
+class Application extends Container
 {
-	use CapsuleManagerTrait;
+	protected $basePath;
 
-	public function __construct(Container $container = null)
+	public function basePath()
 	{
-		$this->setupContainer($container ?: new Container);
+		return $this->basePath;
+	}
 
-		// configiration
-		$this->container['config']['view.paths'] = [__DIR__.'/../src/views'];
-		$this->container['config']['view.compiled'] = __DIR__.'/../storage/view/compiled';
+	public function __construct()
+	{
+		static::setInstance($this);
+		$this->instance('app', $this);
+		$this->instance('container', $this);
 
-		// providers register & boot
+		$this->basePath = realpath(__DIR__.'/..');
+
+		// configuration
+		$this->instance('config', new Fluent);
+		$this['config']['view.paths'] = [__DIR__.'/../src/views'];
+		$this['config']['view.compiled'] = __DIR__.'/../storage/view/compiled';
+
+		// register & boot providers
 		$providers = [
 			Illuminate\Events\EventServiceProvider::class, 
 			Illuminate\Routing\RoutingServiceProvider::class, 
@@ -34,41 +44,39 @@ class Application
 		}
 
 		// Facades
-		$this->container->instance('app', $this->container);
-
 		$facades = [
 			'App' => Illuminate\Support\Facades\App::class, 
 			'Route' => Illuminate\Support\Facades\Route::class, 
 			'View' => Illuminate\Support\Facades\View::class, 
 			'Config' => Illuminate\Support\Facades\Config::class, 
 			'Request' => Illuminate\Support\Facades\Request::class, 
-			'Response' => Illuminate\Support\Facades\Response::class, 
+			'Resonse' => Illuminate\Support\Facades\Resonse::class, 
 			'Input' => Illuminate\Support\Facades\Input::class, 
 		];
-		Facade::setFacadeApplication($this->container);
+		Facade::setFacadeApplication($this);
 		spl_autoload_register(function ($alias) use ($facades)
 		{
 			$abstract = @$facades[$alias];
 			if (isset($abstract)) return class_alias($abstract, $alias);
 		}, true, true);
 
-		// Aliases
+		// Aliases 
 		$aliases = [
 			'request' => [Illuminate\Http\Request::class], 
 		];
-		foreach ($aliases as $key => $aliases)
+		foreach ($aliases as $alias => $abstracts)
 		{
-			foreach ($aliases as $alias)
+			foreach ($abstracts as $abstract)
 			{
-				$this->container->alias($key, $alias);
+				$this->alias($alias, $abstract);
 			}
 		}
 	}
 
 	public function dispatch()
 	{
-		$this->container->instance('request' , $request  = Illuminate\Http\Request::capture());
-		$this->container->instance('response', $response = Route::dispatch($request));
+		$this->instance('request' , $request  = Illuminate\Http\Request::capture());
+		$this->instance('response', $response = Route::dispatch($request));
 		$response->send();
 	}
 }

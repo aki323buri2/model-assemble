@@ -20,5 +20,6 @@
     , "jquery-ui": "*"
     , "font-awesome": "*"
     , "bootstrap": "4.*"
+    , "handsontable": "*"
   }
 }

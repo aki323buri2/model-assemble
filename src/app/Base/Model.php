@@ -32,9 +32,14 @@ class Model implements ArrayAccess, IteratorAggregate
 	}
 	public function setCollection(&$target, $collection)
 	{
-		$target = $collection;
-
-		if (is_null($target)) $target = new Collection;
+		if (is_null($target))
+		{
+			$target = new Collection;
+		}
+		else
+		{
+			$target = collect($collection);
+		}
 
 		return $this;
 	}
@@ -114,16 +119,20 @@ class Model implements ArrayAccess, IteratorAggregate
 	{
 		$dirty = new Collection();
 
-		foreach ($this->attributes as $key => $value)
+		foreach ($this as $key => $value)
 		{
+			$changed = false;
+
 			if (!$this->original->has($key))
 			{
-				$dirty->put($key, $value);
+				$changed = true;
 			}
-			else if ($value !== $this->original->get($key))
+			else if ($value !== $this->getOriginal($key))
 			{
-				$dirty->put($key, $value);
+				$changed = true;
 			}
+
+			if ($changed) $dirty->put($key, $value);
 		}
 
 		return $dirty;
