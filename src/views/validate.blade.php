@@ -20,6 +20,10 @@ table.validate thead > tr > th.process
 }
 </style>
 
+<?php
+
+?>
+
 <table class="table table-sm table-bordered validate">
   <thead>
     <tr>

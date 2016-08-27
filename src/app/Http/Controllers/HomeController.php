@@ -29,7 +29,7 @@ class HomeController extends Controller
 		$this->cachePath = App::basePath().'/storage/cache.json';
 	}
 
-	public function index(Request $request)
+	public function load_cache()
 	{
 		if (file_exists($this->cachePath))
 		{
@@ -39,9 +39,14 @@ class HomeController extends Controller
 		{
 			$cache = [];
 		}
+		return $cache;
+	}
+
+	public function index(Request $request)
+	{
 		return View::make('home', [
 			'catalog' => $this->catalog, 
-			'cache' => $cache, 
+			'cache'   => $this->load_cache(), 
 		]);
 	}
 	public function validate(Request $request)

@@ -7,6 +7,7 @@ use App\Base\Model;
 class Catalog extends Model 
 {
 	protected $storePath;
+	protected $keyName = 'id';
 
 	public function __construct($attributes = null)
 	{
@@ -31,5 +32,9 @@ class Catalog extends Model
 			]
 			, 'name')
 		);
+
+		$this->keyName = $this->columns->keys()[0];
 	}
+
+	
 }
