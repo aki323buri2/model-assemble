@@ -32,7 +32,7 @@ class Model implements ArrayAccess, IteratorAggregate
 	}
 	public function setCollection(&$target, $collection)
 	{
-		if (is_null($target))
+		if (is_null($collection))
 		{
 			$target = new Collection;
 		}

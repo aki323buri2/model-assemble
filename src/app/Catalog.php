@@ -7,6 +7,7 @@ use App\Base\Model;
 class Catalog extends Model 
 {
 	protected $storePath;
+	protected $cachePath;
 	protected $keyName = 'id';
 
 	public function __construct($attributes = null)
@@ -14,6 +15,7 @@ class Catalog extends Model
 		parent::__construct($attributes);
 
 		$this->storePath = App::basePath().'/storage/catalog.json';
+		$this->cachePath = App::basePath().'/storage/cache.json';
 		
 		$this->setColumns(matrix(
 			['name', 'type', 'size', 'title']
@@ -35,6 +37,37 @@ class Catalog extends Model
 
 		$this->keyName = $this->columns->keys()[0];
 	}
-
+	public function all()
+	{
+		$path = $this->storePath;
+		$path = $this->cachePath;
+		$load = json_decode(file_get_contents($path));
+		foreach ($load as $that)
+		{
+			$add = new static($that);
+			$all[] = $add;
+		}
+		return collect($all);
+	}
 	
+	public function find($keyValue)
+	{
+		$all = $this->all();
+		$keyName = $this->keyName;
+		$filter = $all->filter(function ($item, $index) use ($keyName, $keyValue)
+		{
+			return $item->$keyName === $keyValue;
+		});
+
+		return $filter;
+	}
+
+	public function storePath() 
+	{
+		return $this->storePath;
+	}
+	public function cachePath() 
+	{
+		return $this->cachePath;
+	}
 }

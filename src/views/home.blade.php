@@ -1,21 +1,89 @@
-@extends('layouts/master')
+@extends('layouts/sidebar')
 @section('title', 'Home')
+
 <?php
-$links = array_merge((array)@$links, [
-	'/vendor/handsontable/dist/handsontable.full.js',
-	'/vendor/handsontable/dist/handsontable.full.css' 
-]);
-
 $columns = $catalog->getColumns();
+
+$data = $cache;
+
 ?>
+
+@push('styles')
+<style>
+#table1 th 
+{
+	text-align: center;
+}
+#table1 i.fa
+{
+	font-size: 1.5rem;
+}
+#table1 .console
+{
+	width: 30rem;
+}
+#table1 tbody td.nouka, 
+#table1 tbody td.baika, 
+#table1 tbody td.stanka
+{
+	text-align: right;
+}
+#table1 tbody td.catno
+{
+	cursor: pointer;
+}
+</style>
+@endpush
+
 @section('main')
-<p>
-	Home?
-</p>
 
-<div id="validate"></div>
+<div id="card"></div>
 
-<div id="hot"></div>
+<table class="table table-sm table-bordered" id="table1">
+	<thead>
+		<tr>
+			<th class="no">#</th>
+
+			@foreach ($columns as $column)
+			<th
+				class="{{ $column->name }}"
+				data-name="{{ $column->name }}"
+				data-title="{{ $column->title }}"
+			>
+				{{ $column->title }}
+			</th>
+			@endforeach
+
+			<th class="console"><i class="fa fa-cog"></i></th>
+		</tr>
+	</thead>
+	<?php $no = 0?>
+	<tbody>
+	
+		@foreach ($data as $row)
+			<tr
+			data-catno="{{ $row->catno }}"
+			>
+				<th scope="row">{{ ++$no }}</th>
+
+				@foreach ($columns as $name => $column)
+					<?php $value = @$row->$name?>
+					<td
+					class="{{ $name }}"
+					data-name="{{ $name }}"
+					data-value="{{ $value }}"
+					>
+					{{ $value }}
+					</td>
+				@endforeach 
+
+				<td class="console">	
+				</td>
+			</tr>
+		@endforeach
+	
+	</tbody>
+</table>
 
 @endsection
 
@@ -23,104 +91,40 @@ $columns = $catalog->getColumns();
 <script>
 $(function ()
 {
-	var validate = $('#validate');
-	var hot = handson($('#hot'));
-
-	hot.selectCell(0, 0);
-
-	$(hot.rootElement).on('hot.validate', function (e, data)
+	$('#table1 tbody td.catno').on('click', function (e)
 	{
-		$.ajax({url: '/home/validate'
-			, type: 'post'
-			, data: { data: data }
+		var $this = $(this);
+		var tr = $this.closest('tr');
+		var catno = tr.data('catno');
+
+		$.ajax({
+			url: '/home/card'
+			, data: {catno: catno}
 		})
 		.done(function (data)
 		{
-			validate.html(data);
+			var html = $(data).find('#card1');
+			console.log(html);
+
+			var card = $('#card');
+			card.empty().append(html);
 		})
 		;
 	});
-
-	var cache = [];
-	@foreach ($cache as $object)
-		(function ()
-		{
-			var object = {};
-			@foreach ($object as $name => $value)
-				object['{{ $name }}'] = '{{ $value }}';
-			@endforeach
-			cache.push(object);
-		})();
-	@endforeach
-	if (cache.length)
-	{
-		hot.updateSettings({data: cache});
-		$(hot.rootElement).trigger('hot.validate', [hot2json(hot)]);
-	}
 });
-function handson(div)
-{
-	var hot = div.handsontable({
-		columns: columns()
-		, rowHeaders: true
-		, afterChange: afterChange
-	});
-
-	return hot.handsontable('getInstance');
-}
-function columns()
-{
-	columns = [];
-	@foreach ($columns as $column)
-		(function ()
-		{
-			var column = {};
-			column.data  = '{{ $column->name  }}';
-			column.title = '{{ $column->title }}';
-			@if(in_array($column->type, ['int', 'integer', 'real', 'float', 'double']))
-				column.type = 'numeric';
-			@endif
-			columns.push(column);
-		})();
-	@endforeach
-	return columns;
-}
-function afterChange(changes, source)
-{
-	var excepts = ['loadData'];
-	var check = excepts.indexOf(source) < 0;
-	if (!check) return;
-
-	var data = hot2json(this);
-
-	$(this.rootElement).trigger('hot.validate', [data]);
-}
-function hot2json(hot)
-{
-	var data = hot.getData();
-
-	var props = [];
-	for (var i = 0; i < hot.countCols(); i++)
-	{
-		props.push(hot.colToProp(i));
-	}
-
-	var objects = [];
-	
-	$.each(data, function (index, array)
-	{
-		var object = {};
-		
-		$.each(props, function (index, prop)
-		{
-			var value = array[index];
-			object[prop] = value;
-		});
-
-		objects.push(object);
-	});
-
-	return objects;
-}
 </script>
+@endpush
+@push('styles')
+<style>
+#card1
+{
+	margin: 0 auto;
+	width: 50rem;
+}
+#card1 img.card-img-top
+{
+	width: 49rem;
+	margin: .5rem;
+}
+</style>
 @endpush

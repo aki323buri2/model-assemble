@@ -15,6 +15,7 @@ class HomeController extends Controller
 	{
 		Route::get('/', __CLASS__.'@index');
 		Route::get('/home', __CLASS__.'@index');
+		Route::get('/home/card', __CLASS__.'@card');
 		Route::post('/home/validate', __CLASS__.'@validate');
 	}
 
@@ -26,7 +27,7 @@ class HomeController extends Controller
 	{
 		$this->catalog = new Catalog;
 
-		$this->cachePath = App::basePath().'/storage/cache.json';
+		$this->cachePath = $this->catalog->cachePath();
 	}
 
 	public function load_cache()
@@ -47,6 +48,13 @@ class HomeController extends Controller
 		return View::make('home', [
 			'catalog' => $this->catalog, 
 			'cache'   => $this->load_cache(), 
+		]);
+	}
+	public function card(Request $request)
+	{
+		$catno = $request->input('catno');
+		return View::make('card', [
+			'catalog' => $this->catalog->find($catno)->first(),  
 		]);
 	}
 	public function validate(Request $request)
