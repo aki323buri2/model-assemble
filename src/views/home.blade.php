@@ -108,6 +108,8 @@ $(function ()
 
 			var card = $('#card');
 			card.empty().append(html);
+
+			$('[data-toggle=tooltip]').tooltip();
 		})
 		;
 	});
