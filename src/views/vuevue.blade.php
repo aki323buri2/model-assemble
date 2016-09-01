@@ -59,8 +59,8 @@ $(function ()
 		, data: {
 			users: []
 			, newUser: {
-				  name: ''
-				, email: ''
+				  name: 'aaa'
+				, email: 'bbb@ccc.dd'
 			}
 		}
 		// computed property for form validation state
@@ -71,6 +71,31 @@ $(function ()
 					name: !!this.newUser.name.trim()
 					, email: emailRE.test(this.newUser.email)
 				};
+			}
+			, isValid: function ()
+			{
+				var validation = this.validation;
+				return Object.keys(validation).every(function (key)
+				{
+					return validation[key];
+				});
+			}
+		}
+		// methods
+		, methods: {
+			addUser: function ()
+			{
+				if (this.isValid)
+				{
+					console.log(this.newUser.clone());
+					this.users.push(this.newUser);
+					// this.newUser.name = '';
+					// this.newUser.email = '';
+				}
+			}
+			, removeUser: function (user)
+			{
+				console.log(user);
 			}
 		}
 	});
