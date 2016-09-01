@@ -21,5 +21,8 @@
     , "font-awesome": "*"
     , "bootstrap": "4.*"
     , "handsontable": "*"
+    , "lightbox2": "*"
+
+    , "vue": "*"
   }
 }

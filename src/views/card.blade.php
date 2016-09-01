@@ -34,7 +34,6 @@ $(function ()
 @section('main')
 
 <div class="container">
-
 	
 <div class="card" id="card1">
 	<img class="card-img-top" 
