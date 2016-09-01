@@ -51,6 +51,7 @@ $links = array_merge((array)@$links, [
 <script>
 $(function ()
 {
+	var emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	var app = new Vue({
 		// element to mount to
 		el: '#app'
@@ -60,6 +61,16 @@ $(function ()
 			, newUser: {
 				  name: ''
 				, email: ''
+			}
+		}
+		// computed property for form validation state
+		, computed: {
+			validation: function ()
+			{
+				return {
+					name: !!this.newUser.name.trim()
+					, email: emailRE.test(this.newUser.email)
+				};
 			}
 		}
 	});
