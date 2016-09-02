@@ -8,68 +8,61 @@ $links = array_merge((array)@$links, [
 @section('main')
 
 <div id="app">
+	<input type="text" v-model="user.name">
+	<input type="text" v-model="user.email">
+	<button v-on:click="addUser">add</button>
+
+	<ul class="errors">
+		<li v-show="!validation.name">name cannot be empty!</li>
+		<li v-show="!validation.email">Please provide a valid email address!</li>
+	</ul>
+
 	<ul>
-		<li class="user" v-for="user in users" transition>
-			<span>@{{ user.name }} - @{{ user.email }}</span>
+		<li v-for="user in users">
+			@{{ user.name }}
+			-
+			@{{ user.email }}
 			<button v-on:click="removeUser(user)">X</button>
 		</li>
-	</ul>
-	<form id="form" v-on:submit.prevent="addUser">
-		<input v-model="newUser.name">
-		<input v-model="newUser.email">
-		<input type="submit" value="Add User">
-	</form>
-	<ul class="errors">
-		<li v-show="!validation.name">Name cannot be empty.</li>
-		<li v-show="!validation.email">Please Provide a valid email address.</li>
 	</ul>
 </div>
 
 @endsection
-@push('styles')
-<style>
-.user
-{
-	transition: all .25s ease;
-}
-.user:last-child
-{
-	border-bottom: 1px solid #eee;
-}
-.v-enter, .v-leave
-{
-	height: 0;
-	border: 0;
-}
-.errors
-{
-	color: #f00;
-}
-</style>
-@endpush
 @push('scripts-after')
 <script>
 $(function ()
 {
-	var emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	var emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	var app = new Vue({
-		// element to mount to
 		el: '#app'
-		// initial data
 		, data: {
-			users: []
-			, newUser: {
+			user: {
 				  name: 'aaa'
-				, email: 'bbb@ccc.dd'
+				, email: 'aaa@bbb.ccc'
+			}
+			, users: []
+			, counter: 0
+		}
+		, methods: {
+			addUser: function ()
+			{
+				if (this.isValid)
+				{
+					this.users.push($.extend(true, {}, this.user));
+					this.user.name += ++this.counter;
+				}
+			}
+			, removeUser: function (user)
+			{
+				this.users.$remove(user);
 			}
 		}
-		// computed property for form validation state
 		, computed: {
 			validation: function ()
 			{
 				return {
-					name: !!this.newUser.name.trim()
-					, email: emailRE.test(this.newUser.email)
+					name: !!this.user.name.trim()
+					, email: emailRE.test(this.user.email)
 				};
 			}
 			, isValid: function ()
@@ -81,25 +74,7 @@ $(function ()
 				});
 			}
 		}
-		// methods
-		, methods: {
-			addUser: function ()
-			{
-				if (this.isValid)
-				{
-					console.log(this.newUser.clone());
-					this.users.push(this.newUser);
-					// this.newUser.name = '';
-					// this.newUser.email = '';
-				}
-			}
-			, removeUser: function (user)
-			{
-				console.log(user);
-			}
-		}
 	});
-
 });
 </script>
 @endpush
